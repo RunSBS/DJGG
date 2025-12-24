@@ -9,7 +9,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 model_name = "gemma3:4b"
 api_url = "http://localhost:11434/api/chat"
 
-csv_path = "./lol_docs.csv"
+csv_path = "lol_docs.csv"
 
 app = Flask(__name__)
 

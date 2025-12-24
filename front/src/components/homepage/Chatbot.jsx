@@ -2,14 +2,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaComments, FaRobot, FaUser, FaPaperPlane, FaTimes } from "react-icons/fa";
 
-
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const chatLogRef = useRef(null);
 
-    // 스크롤 항상 최신 메시지로 이동
     useEffect(() => {
         if (chatLogRef.current) {
             chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
@@ -24,11 +22,11 @@ const Chatbot = () => {
         const msg = input.trim();
         if (!msg) return;
 
-        appendMessage("사용자: " + msg, "user");
+        appendMessage(msg, "user");
         setInput("");
 
         try {
-            const resp = await fetch("/chat", {
+            const resp = await fetch("/flask/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: msg }),
@@ -36,12 +34,12 @@ const Chatbot = () => {
             const data = await resp.json();
 
             if (!resp.ok) {
-                appendMessage("봇 오류: " + (data.error || "알 수 없는 오류가 발생했다"), "bot");
+                appendMessage("봇 오류: " + (data.error || "알 수 없는 오류가 발생했습니다."), "bot");
                 return;
             }
-            appendMessage("봇: " + data.answer, "bot");
+            appendMessage(data.answer, "bot");
         } catch {
-            appendMessage("봇 오류: 서버에 연결할 수 없다", "bot");
+            appendMessage("봇 오류: 서버에 연결할 수 없습니다.", "bot");
         }
     };
 
@@ -51,10 +49,9 @@ const Chatbot = () => {
 
     return (
         <>
-            {/* 플로팅 버튼 */}
             <div
                 className="chat-fab"
-                title="업무 Q&A 챗봇 열기"
+                title="전적/커뮤니티 챗봇 열기"
                 onClick={() => setIsOpen(prev => !prev)}
                 style={{
                     position: "fixed",
@@ -63,7 +60,7 @@ const Chatbot = () => {
                     width: 64,
                     height: 64,
                     borderRadius: "50%",
-                    backgroundColor: "#0056b3",
+                    backgroundColor: "#1e90ff",
                     color: "#fff",
                     display: "flex",
                     justifyContent: "center",
@@ -76,7 +73,6 @@ const Chatbot = () => {
                 <FaComments size={28} />
             </div>
 
-            {/* 챗봇 위젯 */}
             {isOpen && (
                 <div
                     className="chat-widget"
@@ -84,8 +80,8 @@ const Chatbot = () => {
                         position: "fixed",
                         right: 24,
                         bottom: 100,
-                        width: 340,
-                        maxHeight: 480,
+                        width: 380,
+                        maxHeight: 520,
                         display: "flex",
                         flexDirection: "column",
                         borderRadius: 12,
@@ -95,7 +91,6 @@ const Chatbot = () => {
                         zIndex: 999,
                     }}
                 >
-                    {/* 헤더 */}
                     <div
                         className="chat-widget-header"
                         style={{
@@ -103,7 +98,7 @@ const Chatbot = () => {
                             justifyContent: "space-between",
                             alignItems: "center",
                             padding: "10px 12px",
-                            background: "linear-gradient(120deg, #0056b3, #3388ff)",
+                            background: "linear-gradient(120deg, #1e90ff, #57a6ff)",
                             color: "#fff",
                         }}
                     >
@@ -111,10 +106,10 @@ const Chatbot = () => {
                             <div
                                 className="chat-widget-avatar"
                                 style={{
-                                    width: 32,
-                                    height: 32,
+                                    width: 36,
+                                    height: 36,
                                     borderRadius: "50%",
-                                    backgroundColor: "rgba(255,255,255,0.2)",
+                                    backgroundColor: "rgba(255,255,255,0.15)",
                                     display: "flex",
                                     justifyContent: "center",
                                     alignItems: "center",
@@ -123,11 +118,11 @@ const Chatbot = () => {
                                 <FaRobot />
                             </div>
                             <div>
-                                <div style={{ fontSize: "0.9rem", fontWeight: "bold" }}>
-                                    회사 업무 Q&A 챗봇
+                                <div style={{ fontSize: "0.95rem", fontWeight: "bold" }}>
+                                    전적/커뮤니티 도우미
                                 </div>
-                                <div style={{ fontSize: "0.7rem", opacity: 0.9 }}>
-                                    인사·총무·IT 등 사내 업무 문의를 안내한다
+                                <div style={{ fontSize: "0.72rem", opacity: 0.95 }}>
+                                    소환사 전적·커뮤니티 규정 관련 안내
                                 </div>
                             </div>
                         </div>
@@ -136,19 +131,18 @@ const Chatbot = () => {
                             style={{ cursor: "pointer" }}
                             onClick={() => setIsOpen(false)}
                         >
-                            <FaXmark size={18} />
+                            <FaTimes size={18} />
                         </div>
                     </div>
 
-                    {/* 채팅 로그 */}
                     <div
                         id="chat-log"
                         ref={chatLogRef}
                         style={{
                             padding: 10,
-                            height: 320,
+                            height: 360,
                             overflowY: "auto",
-                            backgroundColor: "#f7f7fb",
+                            backgroundColor: "#f7f9ff",
                         }}
                     >
                         {messages.map((msg, idx) => (
@@ -164,16 +158,16 @@ const Chatbot = () => {
                                 <div
                                     className="avatar"
                                     style={{
-                                        width: 30,
-                                        height: 30,
+                                        width: 32,
+                                        height: 32,
                                         borderRadius: "50%",
                                         display: "flex",
                                         justifyContent: "center",
                                         alignItems: "center",
                                         flexShrink: 0,
                                         fontSize: 16,
-                                        backgroundColor: msg.role === "user" ? "#e6ffe6" : "#e6f0ff",
-                                        color: msg.role === "user" ? "#008800" : "#004499",
+                                        backgroundColor: msg.role === "user" ? "#e8fff0" : "#eef6ff",
+                                        color: msg.role === "user" ? "#006622" : "#0b4f9c",
                                     }}
                                 >
                                     {msg.role === "user" ? <FaUser /> : <FaRobot />}
@@ -181,15 +175,16 @@ const Chatbot = () => {
                                 <div
                                     className="bubble"
                                     style={{
-                                        maxWidth: "70%",
-                                        padding: "6px 9px",
+                                        maxWidth: "75%",
+                                        padding: "8px 10px",
                                         borderRadius: 10,
-                                        fontSize: "0.9rem",
-                                        lineHeight: 1.35,
-                                        marginLeft: msg.role === "user" ? 0 : 6,
-                                        marginRight: msg.role === "user" ? 6 : 0,
-                                        backgroundColor: msg.role === "user" ? "#e6ffe6" : "#f0f4ff",
-                                        color: msg.role === "user" ? "#004400" : "#002b5c",
+                                        fontSize: "0.95rem",
+                                        lineHeight: 1.4,
+                                        marginLeft: msg.role === "user" ? 0 : 8,
+                                        marginRight: msg.role === "user" ? 8 : 0,
+                                        backgroundColor: msg.role === "user" ? "#e8fff0" : "#f0f6ff",
+                                        color: msg.role === "user" ? "#004d1a" : "#002a55",
+                                        whiteSpace: "pre-wrap",
                                     }}
                                 >
                                     {msg.text}
@@ -198,7 +193,6 @@ const Chatbot = () => {
                         ))}
                     </div>
 
-                    {/* 입력 영역 */}
                     <div
                         className="chat-widget-input"
                         style={{
@@ -212,40 +206,39 @@ const Chatbot = () => {
                         <input
                             type="text"
                             id="message"
-                            placeholder="회사 규정, 절차, 복지, IT 문의 등을 입력한다"
+                            placeholder="예시: 'Faker 전적 보여줘' 또는 '커뮤니티 신고 절차 알려줘'"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            style={{ flex: 1, padding: 6, fontSize: "0.9rem" }}
+                            style={{ flex: 1, padding: 8, fontSize: "0.95rem" }}
                         />
                         <button
                             id="send-btn"
                             onClick={sendMessage}
                             style={{
-                                padding: "6px 12px",
+                                padding: "8px 12px",
                                 fontSize: "0.9rem",
                                 cursor: "pointer",
                                 border: "none",
                                 borderRadius: 6,
-                                backgroundColor: "#0056b3",
+                                backgroundColor: "#1e90ff",
                                 color: "#fff",
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 4,
+                                gap: 6,
                             }}
                         >
-                            <FaPaperPlane size={12} />
+                            <FaPaperPlane size={14} />
                             전송
                         </button>
                     </div>
 
                     <div
                         className="chat-widget-footer-text"
-                        style={{ fontSize: "0.72rem", color: "#666", padding: "4px 8px 8px 8px" }}
+                        style={{ fontSize: "0.72rem", color: "#666", padding: "6px 10px 10px 10px" }}
                     >
-                        이 챗봇은 회사 업무 지침이 정리된 company_docs.csv(text,intent)에 등록된 내용만
-                        바탕으로 답변한다. 업무와 무관한 질문에는 “업무에 관련된 내용이 아니라 답변을 드릴 수
-                        없습니다.”라고 응답한다.
+                        이 도우미는 플랫폼 문서(lol_docs.csv)에 등록된 내용만 바탕으로 안내합니다.
+                        문서에 없는 질문에는 “이 플랫폼과 관련된 내용이 아니라 답변을 드릴 수 없습니다.”라고 응답합니다.
                     </div>
                 </div>
             )}
